@@ -1,7 +1,7 @@
 // Header.js
 import React from "react";
-import { FaHeart, FaTrash, FaUser } from "react-icons/fa";
-import { Link } from "react-router-dom";
+import { FaHeart, FaTrash, FaUser, FaSearch } from "react-icons/fa";
+import { Link, useNavigate } from "react-router-dom";
 
 function Header({
   loggedInUser,
@@ -17,7 +17,31 @@ function Header({
   removeFromCart,
   removeFavorite,
   handleCheckout,
+  setUserData,
+  setGuestCart, // <-- añadido
 }) {
+  const navigate = useNavigate();
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+    const searchTerm = e.target.elements.search.value.trim();
+    if (!searchTerm) return;
+    navigate(`/search/${encodeURIComponent(searchTerm)}`);
+    e.target.reset();
+  };
+
+  const handleClearCart = () => {
+    if (loggedInUser) {
+      const id = loggedInUser.id;
+      setUserData((prev) => ({
+        ...prev,
+        [id]: { ...prev[id], cart: [] },
+      }));
+    } else {
+      setGuestCart([]); // <-- ahora funciona
+    }
+  };
+
   return (
     <nav
       style={{
@@ -25,7 +49,7 @@ function Header({
         justifyContent: "space-between",
         alignItems: "center",
         padding: "10px 40px",
-        background: "#F4DDD6", // color rosita nude
+        background: "#F4DDD6",
         color: "white",
         position: "sticky",
         top: 0,
@@ -36,16 +60,44 @@ function Header({
       {/* LOGO */}
       <Link to="/" style={{ display: "flex", alignItems: "center" }}>
         <img
-          src="/images/logo.png" // ruta desde public
+          src="/images/logo.png"
           alt="Logo Esencial"
-          style={{
-            height: "80px", // tamaño más grande
-            objectFit: "contain",
-          }}
+          style={{ height: "120px", objectFit: "contain" }}
         />
       </Link>
 
-      {/* Menú derecho */}
+      {/* BUSCADOR */}
+      <form
+        onSubmit={handleSearch}
+        style={{
+          display: "flex",
+          alignItems: "center",
+          flex: 1,
+          maxWidth: "400px",
+          margin: "0 20px",
+          background: "#fff",
+          borderRadius: "30px",
+          padding: "5px 15px",
+        }}
+      >
+        <input
+          name="search"
+          type="text"
+          placeholder="Buscar productos..."
+          style={{
+            flex: 1,
+            border: "none",
+            outline: "none",
+            padding: "8px",
+            borderRadius: "30px",
+          }}
+        />
+        <button type="submit" style={{ background: "none", border: "none", cursor: "pointer" }}>
+          <FaSearch color="#333" size={18} />
+        </button>
+      </form>
+
+      {/* MENÚ DERECHO */}
       <div style={{ display: "flex", alignItems: "center", gap: "20px", position: "relative" }}>
         {/* Cuenta */}
         <div
@@ -76,7 +128,6 @@ function Header({
               </Link>
             </div>
           )}
-
           {accountOpen && loggedInUser && (
             <div
               style={{
@@ -93,10 +144,7 @@ function Header({
               }}
             >
               <p style={{ marginBottom: "5px", fontWeight: "bold" }}>{loggedInUser.email}</p>
-              <button
-                onClick={handleLogout}
-                style={{ width: "100%", padding: "8px", cursor: "pointer" }}
-              >
+              <button onClick={handleLogout} style={{ width: "100%", padding: "8px", cursor: "pointer" }}>
                 Cerrar sesión
               </button>
             </div>
@@ -169,14 +217,7 @@ function Header({
                       }}
                     />
                     <div style={{ flex: 1 }}>
-                      <p
-                        style={{
-                          margin: 0,
-                          fontWeight: "bold",
-                          fontSize: "12px",
-                          color: "black",
-                        }}
-                      >
+                      <p style={{ margin: 0, fontWeight: "bold", fontSize: "12px", color: "black" }}>
                         {item.nombre}
                       </p>
                       <p style={{ margin: 0, fontSize: "12px", color: "black" }}>
@@ -269,14 +310,7 @@ function Header({
                         }}
                       />
                       <div style={{ flex: 1 }}>
-                        <p
-                          style={{
-                            margin: 0,
-                            fontWeight: "bold",
-                            fontSize: "12px",
-                            color: "black",
-                          }}
-                        >
+                        <p style={{ margin: 0, fontWeight: "bold", fontSize: "12px", color: "black" }}>
                           {item.nombre}
                         </p>
                         <p style={{ margin: 0, fontSize: "12px", color: "black" }}>
@@ -298,6 +332,24 @@ function Header({
                       </button>
                     </div>
                   ))}
+
+                  {/* Botón Eliminar Todo */}
+                  <button
+                    onClick={handleClearCart}
+                    style={{
+                      width: "100%",
+                      padding: "12px",
+                      backgroundColor: "#ff4d4f",
+                      color: "white",
+                      border: "none",
+                      borderRadius: "5px",
+                      cursor: "pointer",
+                      marginBottom: "10px",
+                    }}
+                  >
+                    Eliminar todo
+                  </button>
+
                   <button
                     onClick={handleCheckout}
                     style={{
@@ -308,7 +360,6 @@ function Header({
                       border: "none",
                       borderRadius: "5px",
                       cursor: "pointer",
-                      marginTop: "10px",
                     }}
                   >
                     Comprar todo

@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { loadStripe } from "@stripe/stripe-js";
 import { Routes, Route } from "react-router-dom";
 
-import Header from "./components/Header"; // Header ya modificado
+import Header from "./components/Header";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import Home from "./pages/Home";
@@ -15,7 +15,7 @@ const stripePromise = loadStripe(
   "pk_test_51S2VjzByofHLSuy0jinOHwIH1TYJPeXLN8awBO1aaAOz16Hn5DoL9Yp3kGc7MiXkUT4gCkPXKQxiVqzYDjFL18pB00CEuTej2L"
 );
 
-// Productos de belleza
+// Productos
 const productos = [
   {
     nombre: "Cepillo eléctrico",
@@ -47,7 +47,7 @@ function App() {
   const [guestFavorites, setGuestFavorites] = useState([]);
   const [userData, setUserData] = useState({});
 
-  // --- Cargar sesión de Supabase ---
+  // Cargar sesión Supabase
   useEffect(() => {
     const initSession = async () => {
       const { data } = await supabase.auth.getSession();
@@ -59,7 +59,7 @@ function App() {
     initSession();
   }, []);
 
-  // --- LocalStorage para invitados ---
+  // LocalStorage invitados
   useEffect(() => {
     setGuestCart(JSON.parse(localStorage.getItem("guestCart")) || []);
     setGuestFavorites(JSON.parse(localStorage.getItem("guestFavorites")) || []);
@@ -68,7 +68,7 @@ function App() {
   useEffect(() => localStorage.setItem("guestCart", JSON.stringify(guestCart)), [guestCart]);
   useEffect(() => localStorage.setItem("guestFavorites", JSON.stringify(guestFavorites)), [guestFavorites]);
 
-  // --- Funciones de carrito y favoritos ---
+  // Funciones de carrito/favoritos
   const getCart = () => (loggedInUser ? userData[loggedInUser.id]?.cart || [] : guestCart);
   const getFavorites = () => (loggedInUser ? userData[loggedInUser.id]?.favorites || [] : guestFavorites);
 
@@ -94,6 +94,18 @@ function App() {
       }));
     } else {
       setGuestCart(prev => prev.filter(item => item.nombre !== nombre));
+    }
+  };
+
+  const clearCart = () => {
+    if (loggedInUser) {
+      const id = loggedInUser.id;
+      setUserData(prev => ({
+        ...prev,
+        [id]: { ...prev[id], cart: [] }
+      }));
+    } else {
+      setGuestCart([]);
     }
   };
 
@@ -139,7 +151,7 @@ function App() {
     setLoggedInUser(null);
   };
 
-  // --- Stripe Checkout ---
+  // Stripe Checkout
   const handleCheckout = async () => {
     const cart = getCart();
     if (!cart.length) return alert("Carrito vacío");
@@ -176,6 +188,8 @@ function App() {
         removeFromCart={removeFromCart}
         removeFavorite={removeFavorite}
         handleCheckout={handleCheckout}
+        setUserData={setUserData}
+        setGuestCart={setGuestCart} // <-- Pasamos setGuestCart
       />
 
       <Routes>

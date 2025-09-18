@@ -1,13 +1,7 @@
 // Home.js
 import React, { useRef } from "react";
 import ProductCard from "../components/ProductCard";
-import {
-  FaWhatsapp,
-  FaShippingFast,
-  FaCheckCircle,
-  FaHeadset,
-  FaStar
-} from "react-icons/fa";
+import { FaWhatsapp, FaShippingFast, FaCheckCircle, FaHeadset, FaStar } from "react-icons/fa";
 
 const Home = ({ productos, addToCart, toggleFavorite, getFavorites }) => {
   const scrollRef = useRef(null);
@@ -81,7 +75,7 @@ const Home = ({ productos, addToCart, toggleFavorite, getFavorites }) => {
         </div>
       </div>
 
-      {/* Beneficios de la marca – estilo moderno con iconos */}
+      {/* Beneficios de la marca */}
       <div
         style={{
           maxWidth: "1200px",
@@ -112,7 +106,7 @@ const Home = ({ productos, addToCart, toggleFavorite, getFavorites }) => {
         </div>
       </div>
 
-      {/* Sección de reseñas – estilo barra rosita nude */}
+      {/* Sección de reseñas */}
       <div style={{ backgroundColor: "#F4DDD6", padding: "50px 0" }}>
         <h2 style={{ textAlign: "center", color: "#333", fontSize: "28px", fontWeight: "700", marginBottom: "30px" }}>
           Lo que dicen nuestros clientes
@@ -146,7 +140,7 @@ const Home = ({ productos, addToCart, toggleFavorite, getFavorites }) => {
         </div>
       </div>
 
-      {/* Sección de Contacto – footer, debajo de reseñas */}
+      {/* Sección de contacto */}
       <div
         style={{
           maxWidth: "600px",
@@ -169,8 +163,7 @@ const Home = ({ productos, addToCart, toggleFavorite, getFavorites }) => {
               rel="noopener noreferrer"
               style={{ textDecoration: "none", color: "#25D366", display: "flex", alignItems: "center", gap: "8px" }}
             >
-              <FaWhatsapp size={24} />
-              625 751 451
+              <FaWhatsapp size={24} /> 625 751 451
             </a>
             <a
               href="https://wa.me/34606547265"
@@ -178,8 +171,7 @@ const Home = ({ productos, addToCart, toggleFavorite, getFavorites }) => {
               rel="noopener noreferrer"
               style={{ textDecoration: "none", color: "#25D366", display: "flex", alignItems: "center", gap: "8px" }}
             >
-              <FaWhatsapp size={24} />
-              606 547 265
+              <FaWhatsapp size={24} /> 606 547 265
             </a>
           </div>
         </div>
