@@ -1,5 +1,5 @@
 // Header.js
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import { FaHeart, FaTrash, FaUser, FaSearch } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 
@@ -18,9 +18,13 @@ function Header({
   removeFavorite,
   handleCheckout,
   setUserData,
-  setGuestCart, // <-- añadido
+  setGuestCart,
+  toggleFavorite,
 }) {
   const navigate = useNavigate();
+  const cartRef = useRef();
+  const favRef = useRef();
+  const accountRef = useRef();
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -38,9 +42,20 @@ function Header({
         [id]: { ...prev[id], cart: [] },
       }));
     } else {
-      setGuestCart([]); // <-- ahora funciona
+      setGuestCart([]);
     }
   };
+
+  // --- Cerrar dropdowns al hacer clic fuera ---
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (cartRef.current && !cartRef.current.contains(event.target)) setDropdownOpen(false);
+      if (favRef.current && !favRef.current.contains(event.target)) setFavOpen(false);
+      if (accountRef.current && !accountRef.current.contains(event.target)) setAccountOpen(false);
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [setDropdownOpen, setFavOpen, setAccountOpen]);
 
   return (
     <nav
@@ -101,6 +116,7 @@ function Header({
       <div style={{ display: "flex", alignItems: "center", gap: "20px", position: "relative" }}>
         {/* Cuenta */}
         <div
+          ref={accountRef}
           style={{ cursor: "pointer", fontSize: "24px", color: "#333" }}
           onClick={() => setAccountOpen(!accountOpen)}
         >
@@ -144,7 +160,10 @@ function Header({
               }}
             >
               <p style={{ marginBottom: "5px", fontWeight: "bold" }}>{loggedInUser.email}</p>
-              <button onClick={handleLogout} style={{ width: "100%", padding: "8px", cursor: "pointer" }}>
+              <button
+                onClick={handleLogout}
+                style={{ width: "100%", padding: "8px", cursor: "pointer", border: "none" }}
+              >
                 Cerrar sesión
               </button>
             </div>
@@ -153,6 +172,7 @@ function Header({
 
         {/* Favoritos */}
         <div
+          ref={favRef}
           style={{ position: "relative", fontSize: "28px", cursor: "pointer", color: "#333" }}
           onClick={() => setFavOpen(!favOpen)}
         >
@@ -190,9 +210,9 @@ function Header({
                 zIndex: 1000,
               }}
             >
-              <h4 style={{ marginTop: 0 }}>Favoritos</h4>
+              <h4 style={{ marginTop: 0, fontSize: "14px" }}>Favoritos</h4>
               {getFavorites().length === 0 ? (
-                <p>No hay favoritos</p>
+                <p style={{ fontSize: "12px" }}>No hay favoritos</p>
               ) : (
                 getFavorites().map((item, idx) => (
                   <div
@@ -217,7 +237,14 @@ function Header({
                       }}
                     />
                     <div style={{ flex: 1 }}>
-                      <p style={{ margin: 0, fontWeight: "bold", fontSize: "12px", color: "black" }}>
+                      <p
+                        style={{
+                          margin: 0,
+                          fontWeight: "bold",
+                          fontSize: "12px",
+                          color: "black",
+                        }}
+                      >
                         {item.nombre}
                       </p>
                       <p style={{ margin: 0, fontSize: "12px", color: "black" }}>
@@ -225,13 +252,14 @@ function Header({
                       </p>
                     </div>
                     <button
-                      onClick={() => removeFavorite(item.nombre)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        removeFavorite(item.nombre);
+                      }}
                       style={{
-                        background: "red",
+                        background: "none",
                         border: "none",
-                        color: "white",
-                        borderRadius: "5px",
-                        padding: "5px",
+                        color: "red",
                         cursor: "pointer",
                       }}
                     >
@@ -246,6 +274,7 @@ function Header({
 
         {/* Carrito */}
         <div
+          ref={cartRef}
           style={{ position: "relative", fontSize: "36px", cursor: "pointer", color: "#333" }}
           onClick={() => setDropdownOpen(!dropdownOpen)}
         >
@@ -282,9 +311,9 @@ function Header({
                 zIndex: 1000,
               }}
             >
-              <h4 style={{ marginTop: 0, color: "black" }}>Carrito</h4>
+              <h4 style={{ marginTop: 0, fontSize: "14px" }}>Carrito</h4>
               {getCart().length === 0 ? (
-                <p style={{ color: "black" }}>No hay productos</p>
+                <p style={{ fontSize: "12px" }}>No hay productos</p>
               ) : (
                 <>
                   {getCart().map((item, idx) => (
@@ -310,7 +339,14 @@ function Header({
                         }}
                       />
                       <div style={{ flex: 1 }}>
-                        <p style={{ margin: 0, fontWeight: "bold", fontSize: "12px", color: "black" }}>
+                        <p
+                          style={{
+                            margin: 0,
+                            fontWeight: "bold",
+                            fontSize: "12px",
+                            color: "black",
+                          }}
+                        >
                           {item.nombre}
                         </p>
                         <p style={{ margin: 0, fontSize: "12px", color: "black" }}>
@@ -318,13 +354,14 @@ function Header({
                         </p>
                       </div>
                       <button
-                        onClick={() => removeFromCart(item.nombre)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          removeFromCart(item.nombre);
+                        }}
                         style={{
-                          background: "red",
+                          background: "none",
                           border: "none",
-                          color: "white",
-                          borderRadius: "5px",
-                          padding: "5px",
+                          color: "red",
                           cursor: "pointer",
                         }}
                       >
@@ -339,11 +376,11 @@ function Header({
                     style={{
                       width: "100%",
                       padding: "12px",
-                      backgroundColor: "#ff4d4f",
-                      color: "white",
+                      background: "none",
                       border: "none",
-                      borderRadius: "5px",
+                      color: "#ff4d4f",
                       cursor: "pointer",
+                      fontWeight: "bold",
                       marginBottom: "10px",
                     }}
                   >

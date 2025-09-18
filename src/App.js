@@ -1,4 +1,3 @@
-// App.js
 import React, { useState, useEffect } from "react";
 import { loadStripe } from "@stripe/stripe-js";
 import { Routes, Route } from "react-router-dom";
@@ -11,30 +10,13 @@ import ProductPage from "./pages/ProductPage";
 import { supabase } from "./supabaseClient";
 
 // Stripe
-const stripePromise = loadStripe(
-  "pk_test_51S2VjzByofHLSuy0jinOHwIH1TYJPeXLN8awBO1aaAOz16Hn5DoL9Yp3kGc7MiXkUT4gCkPXKQxiVqzYDjFL18pB00CEuTej2L"
-);
+const stripePromise = loadStripe("pk_test_...");
 
 // Productos
 const productos = [
-  {
-    nombre: "Cepillo eléctrico",
-    precio: 4500,
-    imagen: "/images/cepillo.jpg",
-    descripcion: "Cepillo facial eléctrico para una limpieza profunda y suave."
-  },
-  {
-    nombre: "Crema hidratante",
-    precio: 3500,
-    imagen: "/images/crema.jpg",
-    descripcion: "Crema facial hidratante para todo tipo de piel."
-  },
-  {
-    nombre: "Retinol serum",
-    precio: 5500,
-    imagen: "/images/retinol.jpg",
-    descripcion: "Serum antiarrugas con retinol para rejuvenecer tu piel."
-  }
+  { nombre: "Cepillo eléctrico", precio: 4500, imagen: "/images/cepillo.jpg", descripcion: "Cepillo facial eléctrico" },
+  { nombre: "Crema hidratante", precio: 3500, imagen: "/images/crema.jpg", descripcion: "Crema facial hidratante" },
+  { nombre: "Retinol serum", precio: 5500, imagen: "/images/retinol.jpg", descripcion: "Serum antiarrugas" }
 ];
 
 function App() {
@@ -68,7 +50,7 @@ function App() {
   useEffect(() => localStorage.setItem("guestCart", JSON.stringify(guestCart)), [guestCart]);
   useEffect(() => localStorage.setItem("guestFavorites", JSON.stringify(guestFavorites)), [guestFavorites]);
 
-  // Funciones de carrito/favoritos
+  // Carrito y favoritos
   const getCart = () => (loggedInUser ? userData[loggedInUser.id]?.cart || [] : guestCart);
   const getFavorites = () => (loggedInUser ? userData[loggedInUser.id]?.favorites || [] : guestFavorites);
 
@@ -84,16 +66,21 @@ function App() {
     }
   };
 
-  const removeFromCart = (nombre) => {
+  const removeFromCart = (index) => {
     if (loggedInUser) {
       const id = loggedInUser.id;
-      const cart = getCart();
+      const cart = [...getCart()];
+      cart.splice(index, 1);
       setUserData(prev => ({
         ...prev,
-        [id]: { ...prev[id], cart: cart.filter(item => item.nombre !== nombre) }
+        [id]: { ...prev[id], cart }
       }));
     } else {
-      setGuestCart(prev => prev.filter(item => item.nombre !== nombre));
+      setGuestCart(prev => {
+        const newCart = [...prev];
+        newCart.splice(index, 1);
+        return newCart;
+      });
     }
   };
 
@@ -109,49 +96,6 @@ function App() {
     }
   };
 
-  const toggleFavorite = (prod) => {
-    if (loggedInUser) {
-      const id = loggedInUser.id;
-      const favs = getFavorites();
-      const exists = favs.find(f => f.nombre === prod.nombre);
-      setUserData(prev => ({
-        ...prev,
-        [id]: {
-          ...prev[id],
-          favorites: exists
-            ? favs.filter(f => f.nombre !== prod.nombre)
-            : [...favs, prod]
-        }
-      }));
-    } else {
-      const exists = guestFavorites.find(f => f.nombre === prod.nombre);
-      setGuestFavorites(
-        exists
-          ? guestFavorites.filter(f => f.nombre !== prod.nombre)
-          : [...guestFavorites, prod]
-      );
-    }
-  };
-
-  const removeFavorite = (nombre) => {
-    if (loggedInUser) {
-      const id = loggedInUser.id;
-      const favs = getFavorites();
-      setUserData(prev => ({
-        ...prev,
-        [id]: { ...prev[id], favorites: favs.filter(f => f.nombre !== nombre) }
-      }));
-    } else {
-      setGuestFavorites(prev => prev.filter(f => f.nombre !== nombre));
-    }
-  };
-
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    setLoggedInUser(null);
-  };
-
-  // Stripe Checkout
   const handleCheckout = async () => {
     const cart = getCart();
     if (!cart.length) return alert("Carrito vacío");
@@ -172,6 +116,11 @@ function App() {
     }
   };
 
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    setLoggedInUser(null);
+  };
+
   return (
     <div style={{ fontFamily: "Arial", minHeight: "100vh", background: "#f2f2f2" }}>
       <Header
@@ -185,34 +134,25 @@ function App() {
         getCart={getCart}
         getFavorites={getFavorites}
         handleLogout={handleLogout}
-        removeFromCart={removeFromCart}
-        removeFavorite={removeFavorite}
         handleCheckout={handleCheckout}
+        removeFromCart={removeFromCart}
+        clearCart={clearCart}
         setUserData={setUserData}
-        setGuestCart={setGuestCart} // <-- Pasamos setGuestCart
+        setGuestCart={setGuestCart}
       />
 
       <Routes>
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
-        <Route
-          path="/"
-          element={
-            <Home
-              productos={productos}
-              addToCart={addToCart}
-              toggleFavorite={toggleFavorite}
-              getFavorites={getFavorites}
-            />
-          }
-        />
+        <Route path="/" element={<Home productos={productos} addToCart={addToCart} getFavorites={getFavorites} />} />
         <Route
           path="/product/:nombre"
           element={
             <ProductPage
+              productos={productos}
               addToCart={addToCart}
-              toggleFavorite={toggleFavorite}
               getFavorites={getFavorites}
+              handleCheckout={handleCheckout}
             />
           }
         />
