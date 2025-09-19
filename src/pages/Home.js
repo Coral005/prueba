@@ -16,21 +16,23 @@ const Home = ({ productos, addToCart, toggleFavorite, getFavorites }) => {
 
   return (
     <div style={{ fontFamily: "Arial, sans-serif" }}>
-      {/* Hero / Banner superior */}
-      <div
-        style={{
-          width: "100%",
-          height: "450px",
-          background: `url('/images/hero-minimalista.jpg') center/cover no-repeat`,
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-          color: "white",
-          textAlign: "center",
-          position: "relative",
-        }}
-      >
+      {/* Hero / Banner superior con video */}
+      <div style={{ width: "100%", height: "450px", position: "relative", overflow: "hidden" }}>
+        <video
+          src="/videos/diseño-sin-titulo.mp4"
+          autoPlay
+          loop
+          muted
+          style={{
+            width: "100%",
+            height: "100%",
+            objectFit: "cover",
+            position: "absolute",
+            top: 0,
+            left: 0,
+          }}
+        />
+        {/* Overlay semi-transparente */}
         <div
           style={{
             position: "absolute",
@@ -38,11 +40,24 @@ const Home = ({ productos, addToCart, toggleFavorite, getFavorites }) => {
             left: 0,
             width: "100%",
             height: "100%",
-            backgroundColor: "rgba(0,0,0,0.35)",
+            backgroundColor: "rgba(0, 0, 0, 0.35)",
             zIndex: 1,
           }}
-        ></div>
-        <div style={{ position: "relative", zIndex: 2, maxWidth: "800px", padding: "0 20px" }}>
+        />
+        {/* Texto del hero */}
+        <div
+          style={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            color: "white",
+            textAlign: "center",
+            zIndex: 2,
+            maxWidth: "800px",
+            padding: "0 20px",
+          }}
+        >
           <h1
             style={{
               fontSize: "48px",
@@ -50,11 +65,20 @@ const Home = ({ productos, addToCart, toggleFavorite, getFavorites }) => {
               letterSpacing: "2px",
               marginBottom: "20px",
               fontFamily: "'Helvetica Neue', sans-serif",
+              textShadow: "2px 2px 8px rgba(0,0,0,0.6)",
             }}
           >
             ESENCIAL
           </h1>
-          <p style={{ fontSize: "20px", fontWeight: "300", lineHeight: "1.5", color: "#f0f0f0" }}>
+          <p
+            style={{
+              fontSize: "20px",
+              fontWeight: "300",
+              lineHeight: "1.5",
+              color: "#f0f0f0",
+              textShadow: "1px 1px 6px rgba(0,0,0,0.5)",
+            }}
+          >
             Descubre productos minimalistas que combinan elegancia, simplicidad y funcionalidad.
           </p>
         </div>
