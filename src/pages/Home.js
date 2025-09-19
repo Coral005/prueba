@@ -1,4 +1,3 @@
-// Home.js
 import React, { useRef } from "react";
 import ProductCard from "../components/ProductCard";
 import { FaWhatsapp, FaShippingFast, FaCheckCircle, FaHeadset, FaStar } from "react-icons/fa";
@@ -14,71 +13,38 @@ const Home = ({ productos, addToCart, toggleFavorite, getFavorites }) => {
     { nombre: "Marta S.", comentario: "Muy contenta con la compra, volveré a comprar.", estrellas: 5 },
   ];
 
+  const heroHeight = window.innerWidth < 480 ? 250 : window.innerWidth < 768 ? 300 : 450;
+  const h1Size = window.innerWidth < 480 ? 28 : window.innerWidth < 768 ? 32 : 48;
+  const pSize = window.innerWidth < 480 ? 14 : window.innerWidth < 768 ? 16 : 20;
+
   return (
     <div style={{ fontFamily: "Arial, sans-serif" }}>
-      {/* Hero / Banner superior con video */}
-      <div style={{ width: "100%", height: "450px", position: "relative", overflow: "hidden" }}>
+      {/* Hero / Banner superior */}
+      <div style={{ width: "100%", height: `${heroHeight}px`, position: "relative", overflow: "hidden" }}>
         <video
           src="/videos/diseño-sin-titulo.mp4"
           autoPlay
           loop
           muted
-          style={{
-            width: "100%",
-            height: "100%",
-            objectFit: "cover",
-            position: "absolute",
-            top: 0,
-            left: 0,
-          }}
+          playsInline
+          style={{ width: "100%", height: "100%", objectFit: "cover", position: "absolute", top: 0, left: 0, zIndex: 0 }}
         />
-        {/* Overlay semi-transparente */}
-        <div
-          style={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            width: "100%",
-            height: "100%",
-            backgroundColor: "rgba(0, 0, 0, 0.35)",
-            zIndex: 1,
-          }}
-        />
-        {/* Texto del hero */}
+        <div style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", backgroundColor: "rgba(0,0,0,0.35)", zIndex: 1 }}></div>
         <div
           style={{
             position: "absolute",
             top: "50%",
             left: "50%",
             transform: "translate(-50%, -50%)",
-            color: "white",
-            textAlign: "center",
             zIndex: 2,
-            maxWidth: "800px",
+            textAlign: "center",
+            color: "white",
             padding: "0 20px",
+            maxWidth: "800px",
           }}
         >
-          <h1
-            style={{
-              fontSize: "48px",
-              fontWeight: "700",
-              letterSpacing: "2px",
-              marginBottom: "20px",
-              fontFamily: "'Helvetica Neue', sans-serif",
-              textShadow: "2px 2px 8px rgba(0,0,0,0.6)",
-            }}
-          >
-            ESENCIAL
-          </h1>
-          <p
-            style={{
-              fontSize: "20px",
-              fontWeight: "300",
-              lineHeight: "1.5",
-              color: "#f0f0f0",
-              textShadow: "1px 1px 6px rgba(0,0,0,0.5)",
-            }}
-          >
+          <h1 style={{ fontSize: `${h1Size}px`, fontWeight: 700, letterSpacing: "2px" }}>ESENCIAL</h1>
+          <p style={{ fontSize: `${pSize}px`, fontWeight: 300, lineHeight: 1.5 }}>
             Descubre productos minimalistas que combinan elegancia, simplicidad y funcionalidad.
           </p>
         </div>
@@ -109,6 +75,7 @@ const Home = ({ productos, addToCart, toggleFavorite, getFavorites }) => {
           justifyContent: "space-around",
           alignItems: "center",
           gap: "40px",
+          flexWrap: "wrap",
         }}
       >
         <div style={{ textAlign: "center" }}>
@@ -135,7 +102,6 @@ const Home = ({ productos, addToCart, toggleFavorite, getFavorites }) => {
         <h2 style={{ textAlign: "center", color: "#333", fontSize: "28px", fontWeight: "700", marginBottom: "30px" }}>
           Lo que dicen nuestros clientes
         </h2>
-
         <div style={{ display: "flex", justifyContent: "center", flexWrap: "wrap", gap: "20px", maxWidth: "1200px", margin: "0 auto" }}>
           {reseñas.map((reseña, idx) => (
             <div
@@ -155,9 +121,7 @@ const Home = ({ productos, addToCart, toggleFavorite, getFavorites }) => {
               </p>
               <p style={{ fontWeight: "600", color: "#333", marginBottom: "10px" }}>— {reseña.nombre}</p>
               <div style={{ color: "#FFD700" }}>
-                {[...Array(reseña.estrellas)].map((_, i) => (
-                  <FaStar key={i} />
-                ))}
+                {[...Array(reseña.estrellas)].map((_, i) => <FaStar key={i} />)}
               </div>
             </div>
           ))}
@@ -177,7 +141,6 @@ const Home = ({ productos, addToCart, toggleFavorite, getFavorites }) => {
         }}
       >
         <h2 style={{ marginBottom: "30px" }}>Contacto</h2>
-
         <div style={{ marginBottom: "30px" }}>
           <h3>Teléfonos</h3>
           <div style={{ display: "flex", justifyContent: "center", gap: "20px", fontSize: "18px" }}>
@@ -199,7 +162,6 @@ const Home = ({ productos, addToCart, toggleFavorite, getFavorites }) => {
             </a>
           </div>
         </div>
-
         <div>
           <h3>Correo electrónico</h3>
           <a
